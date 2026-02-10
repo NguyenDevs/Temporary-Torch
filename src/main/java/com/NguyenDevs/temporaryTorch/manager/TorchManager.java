@@ -176,8 +176,8 @@ public class TorchManager {
         if (random.nextDouble() < charcoalChance) {
             int charcoalAmount = plugin.getConfigManager().getDropCharcoalAmount();
             if (charcoalAmount > 0) {
-                ItemStack charcoal = new ItemStack(Material.COAL, charcoalAmount);
-                charcoal.setDurability((short) 1); // Charcoal
+                ItemStack charcoal = new ItemStack(Material.CHARCOAL, charcoalAmount);
+                charcoal.setDurability((short) 1);
                 location.getWorld().dropItemNaturally(location, charcoal);
             }
         }

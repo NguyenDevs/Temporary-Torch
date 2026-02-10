@@ -13,16 +13,18 @@ torch:
   # Drop settings when torch expires or is broken without Silk Touch
   drops:
     stick:
+      # Chance to drop stick (0.0 - 1.0, where 1.0 = 100%)
+      chance: 1.0
       amount: 1
 
     coal:
       # Chance to drop coal (0.0 - 1.0, where 1.0 = 100%)
-      chance: 0.5
+      chance: 0.2
       amount: 1
 
     charcoal:
       # Chance to drop charcoal (0.0 - 1.0, where 1.0 = 100%)
-      chance: 0.3
+      chance: 0.1
       amount: 1
 
 # List of worlds where the plugin is disabled
