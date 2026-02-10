@@ -1,0 +1,26 @@
+# TemporaryTorch Messages
+# Created by NguyenDevs
+#
+# Color Codes Support:
+# 1. Legacy codes: &a, &b, &c, etc.
+# 2. Hex colors: <#RRGGBB>text</#RRGGBB>
+# 3. Gradients: <gradient:#START:#END>text</gradient>
+#
+# Examples:
+# - &aGreen text &bAqua text
+# - <#FF5733>Orange text</#FF5733>
+# - <gradient:#FF0000:#0000FF>Red to Blue gradient</gradient>
+# - Mix: &b<#FFD700>Gold</#FFD700> &atext
+
+prefix: "<gradient:#FF8C00:#F2FF00>TemporaryTorch</gradient>"
+# Command messages
+commands:
+  usage: "&f• Usage: &e/temporarytorch reload"
+  reload-success: "&7Config has been reloaded successfully!"
+  no-permission: "&cYou don't have permission to use this command!"
+
+# Torch messages
+torch:
+  placed: "<#FFD700>⚡</#FFD700> &eTorch placed! It will disappear in &f{time}&e."
+  expired: "<#FF8C00>⏰</#FF8C00> &6A torch has expired and disappeared."
+  world-disabled: "<#FF0000>⚠</#FF0000> &cTorches are disabled in this world!"

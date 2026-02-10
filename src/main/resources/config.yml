@@ -1,0 +1,41 @@
+# TemporaryTorch Configuration
+# Created by NguyenDevs
+
+# Torch settings
+torch:
+  # Default duration in seconds before torch disappears
+  # This is used when player doesn't have override permission
+  default-duration: 600  # 10 minutes
+
+  # How often to check for expired torches (in ticks, 20 ticks = 1 second)
+  check-interval: 20
+
+  # Drop settings when torch expires or is broken without Silk Touch
+  drops:
+    stick:
+      amount: 1
+
+    coal:
+      # Chance to drop coal (0.0 - 1.0, where 1.0 = 100%)
+      chance: 0.5
+      amount: 1
+
+    charcoal:
+      # Chance to drop charcoal (0.0 - 1.0, where 1.0 = 100%)
+      chance: 0.3
+      amount: 1
+
+# List of worlds where the plugin is disabled
+disabled-worlds:
+  - world_nether_disabled_example
+  - world_the_end_disabled_example
+
+# Permission system:
+# - temporarytorch.bypass - Torches never expire for players with this permission
+# - temporarytorch.override.<number><unit> - Override default duration
+#   Examples:
+#   - temporarytorch.override.30m - Torch lasts 30 minutes
+#   - temporarytorch.override.1h - Torch lasts 1 hour
+#   - temporarytorch.override.2d - Torch lasts 2 days
+#   Units: s (seconds), m (minutes), h (hours), d (days)
+# - temporarytorch.admin - Required to use reload command
