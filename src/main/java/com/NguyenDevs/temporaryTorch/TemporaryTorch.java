@@ -52,7 +52,7 @@ public final class TemporaryTorch extends JavaPlugin {
             torchManager.stopDecayTask();
         }
 
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&e[&6TemporaryTorch&e] &aTemporaryTorch plugin disabled!"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&e[&6TemporaryTorch&e] &cTemporaryTorch plugin disabled!"));
     }
 
     public static TemporaryTorch getInstance() {

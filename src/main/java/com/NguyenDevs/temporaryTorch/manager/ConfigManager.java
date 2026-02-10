@@ -36,8 +36,7 @@ public class ConfigManager {
         boolean updated = false;
 
         FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(
-                new InputStreamReader(plugin.getResource("config.yml"), StandardCharsets.UTF_8)
-        );
+                new InputStreamReader(plugin.getResource("config.yml"), StandardCharsets.UTF_8));
 
         for (String key : defaultConfig.getKeys(true)) {
             if (!config.contains(key)) {
@@ -75,6 +74,10 @@ public class ConfigManager {
 
     public int getDropStickAmount() {
         return config.getInt("torch.drops.stick.amount", 1);
+    }
+
+    public double getDropStickChance() {
+        return config.getDouble("torch.drops.stick.chance", 1.0);
     }
 
     public double getDropCoalChance() {

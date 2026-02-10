@@ -103,15 +103,17 @@ public class TorchManager {
                 location,
                 System.currentTimeMillis(),
                 duration,
-                player.getUniqueId().toString()
-        );
+                player.getUniqueId().toString());
 
         torches.put(key, torchData);
+        saveData();
     }
 
     public void removeTorch(Location location) {
         String key = getLocationKey(location);
-        torches.remove(key);
+        if (torches.remove(key) != null) {
+            saveData();
+        }
     }
 
     public boolean hasTorch(Location location) {
@@ -139,7 +141,7 @@ public class TorchManager {
     }
 
     private void checkExpiredTorches() {
-        torches.entrySet().removeIf(entry -> {
+        boolean changed = torches.entrySet().removeIf(entry -> {
             TorchData torchData = entry.getValue();
 
             if (torchData.isExpired()) {
@@ -158,27 +160,40 @@ public class TorchManager {
 
             return false;
         });
+
+        if (changed) {
+            saveData();
+        }
     }
 
     private void dropItems(Location location) {
-        int stickAmount = plugin.getConfigManager().getDropStickAmount();
-        if (stickAmount > 0) {
-            location.getWorld().dropItemNaturally(location, new ItemStack(Material.STICK, stickAmount));
+        double stickChance = plugin.getConfigManager().getDropStickChance();
+        if (random.nextDouble() < stickChance) {
+            int stickAmount = plugin.getConfigManager().getDropStickAmount();
+            if (stickAmount > 0) {
+                location.getWorld().dropItemNaturally(location, new ItemStack(Material.STICK, stickAmount));
+            }
         }
+
+        boolean droppedCoal = false;
         double coalChance = plugin.getConfigManager().getDropCoalChance();
         if (random.nextDouble() < coalChance) {
             int coalAmount = plugin.getConfigManager().getDropCoalAmount();
             if (coalAmount > 0) {
                 location.getWorld().dropItemNaturally(location, new ItemStack(Material.COAL, coalAmount));
+                droppedCoal = true;
             }
         }
-        double charcoalChance = plugin.getConfigManager().getDropCharcoalChance();
-        if (random.nextDouble() < charcoalChance) {
-            int charcoalAmount = plugin.getConfigManager().getDropCharcoalAmount();
-            if (charcoalAmount > 0) {
-                ItemStack charcoal = new ItemStack(Material.CHARCOAL, charcoalAmount);
-                charcoal.setDurability((short) 1);
-                location.getWorld().dropItemNaturally(location, charcoal);
+
+        if (!droppedCoal) {
+            double charcoalChance = plugin.getConfigManager().getDropCharcoalChance();
+            if (random.nextDouble() < charcoalChance) {
+                int charcoalAmount = plugin.getConfigManager().getDropCharcoalAmount();
+                if (charcoalAmount > 0) {
+                    ItemStack charcoal = new ItemStack(Material.CHARCOAL, charcoalAmount);
+                    charcoal.setDurability((short) 1);
+                    location.getWorld().dropItemNaturally(location, charcoal);
+                }
             }
         }
     }
