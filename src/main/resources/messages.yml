@@ -12,7 +12,7 @@
 # - <gradient:#FF0000:#0000FF>Red to Blue gradient</gradient>
 # - Mix: &b<#FFD700>Gold</#FFD700> &atext
 
-prefix: "<gradient:#FF8C00:#F2FF00>TemporaryTorch</gradient>"
+prefix: "<gradient:#FF8C00:#F2FF00>[TemporaryTorch]</gradient>"
 # Command messages
 commands:
   usage: "&f• Usage: &e/temporarytorch reload"

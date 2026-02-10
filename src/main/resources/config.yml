@@ -5,7 +5,7 @@
 torch:
   # Default duration in seconds before torch disappears
   # This is used when player doesn't have override permission
-  default-duration: 600  # 10 minutes
+  default-duration: 3600  # 1 hour
 
   # How often to check for expired torches (in ticks, 20 ticks = 1 second)
   check-interval: 20
@@ -19,7 +19,7 @@ torch:
 
     coal:
       # Chance to drop coal (0.0 - 1.0, where 1.0 = 100%)
-      chance: 0.2
+      chance: 0.0
       amount: 1
 
     charcoal:
