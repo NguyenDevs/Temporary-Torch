@@ -1,25 +1,16 @@
 name: TemporaryTorch
-version: 1.0.0
 main: com.NguyenDevs.temporaryTorch.TemporaryTorch
-api-version: 1.21
-author: NguyenDevs
-description: A plugin that makes torches temporary and disappear after a set duration
-
+version: ${version}
+api-version: "1.21"
 commands:
-  temporarytorch:
-    description: Main command for TemporaryTorch
-    usage: /temporarytorch reload
-    aliases: [tt, temptorch]
-
+  tt:
+    description: TemporaryTorch admin command
+    usage: /tt reload
+    permission: temporarytorch.admin
 permissions:
-  temporarytorch.bypass:
-    description: Torches placed by players with this permission never expire
-    default: false
-
-  temporarytorch.override.*:
-    description: Override torch duration (e.g., temporarytorch.override.1h)
-    default: false
-
+  temporarytorch.use:
+    default: true
   temporarytorch.admin:
-    description: Allows access to admin commands like reload
     default: op
+  temporarytorch.refuel:
+    default: true

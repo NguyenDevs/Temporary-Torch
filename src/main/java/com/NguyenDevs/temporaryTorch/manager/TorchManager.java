@@ -1,211 +1,29 @@
 package com.NguyenDevs.temporaryTorch.manager;
 
 import com.NguyenDevs.temporaryTorch.TemporaryTorch;
-import com.NguyenDevs.temporaryTorch.models.TorchData;
-import com.NguyenDevs.temporaryTorch.utils.PermissionUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import com.NguyenDevs.temporaryTorch.database.TorchRepository;
+import com.NguyenDevs.temporaryTorch.scheduler.TorchExpiryScheduler;
 
 public class TorchManager {
-
     private final TemporaryTorch plugin;
-    private final Map<String, TorchData> torches;
-    private File dataFile;
-    private FileConfiguration data;
-    private BukkitTask decayTask;
-    private final Random random;
+    private final TorchRepository repository;
+    private final TorchExpiryScheduler scheduler;
 
-    public TorchManager(TemporaryTorch plugin) {
+    public TorchManager(TemporaryTorch plugin, TorchRepository repository) {
         this.plugin = plugin;
-        this.torches = new HashMap<>();
-        this.random = new Random();
+        this.repository = repository;
+        this.scheduler = new TorchExpiryScheduler(plugin, repository);
     }
 
-    public void loadData() {
-        dataFile = new File(plugin.getDataFolder(), "data.yml");
-
-        if (!dataFile.exists()) {
-            try {
-                dataFile.createNewFile();
-            } catch (IOException e) {
-                plugin.getLogger().severe("Could not create data.yml: " + e.getMessage());
-                return;
-            }
-        }
-
-        data = YamlConfiguration.loadConfiguration(dataFile);
-
-        if (data.contains("torches")) {
-            for (String key : data.getConfigurationSection("torches").getKeys(false)) {
-                try {
-                    String path = "torches." + key;
-                    String[] coords = key.split(",");
-
-                    String worldName = coords[0];
-                    int x = Integer.parseInt(coords[1]);
-                    int y = Integer.parseInt(coords[2]);
-                    int z = Integer.parseInt(coords[3]);
-
-                    Location location = new Location(Bukkit.getWorld(worldName), x, y, z);
-                    long placedTime = data.getLong(path + ".placed-time");
-                    long duration = data.getLong(path + ".duration");
-                    String ownerUUID = data.getString(path + ".owner", "");
-
-                    TorchData torchData = new TorchData(location, placedTime, duration, ownerUUID);
-                    torches.put(key, torchData);
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Failed to load torch data for key: " + key);
-                }
-            }
-        }
-
-        plugin.getLogger().info("Loaded " + torches.size() + " torches from data.yml");
+    public TorchRepository getRepository() {
+        return repository;
     }
 
-    public void saveData() {
-        data = new YamlConfiguration();
-
-        for (Map.Entry<String, TorchData> entry : torches.entrySet()) {
-            String key = entry.getKey();
-            TorchData torchData = entry.getValue();
-            String path = "torches." + key;
-
-            data.set(path + ".placed-time", torchData.getPlacedTime());
-            data.set(path + ".duration", torchData.getDuration());
-            data.set(path + ".owner", torchData.getOwnerUUID());
-        }
-
-        try {
-            data.save(dataFile);
-        } catch (IOException e) {
-            plugin.getLogger().severe("Could not save data.yml: " + e.getMessage());
-        }
+    public void startScheduler() {
+        scheduler.start();
     }
 
-    public void addTorch(Location location, Player player) {
-        String key = getLocationKey(location);
-        long duration = PermissionUtils.getTorchDuration(player, plugin);
-
-        TorchData torchData = new TorchData(
-                location,
-                System.currentTimeMillis(),
-                duration,
-                player.getUniqueId().toString());
-
-        torches.put(key, torchData);
-        saveData();
-    }
-
-    public void removeTorch(Location location) {
-        String key = getLocationKey(location);
-        if (torches.remove(key) != null) {
-            saveData();
-        }
-    }
-
-    public boolean hasTorch(Location location) {
-        String key = getLocationKey(location);
-        return torches.containsKey(key);
-    }
-
-    public TorchData getTorch(Location location) {
-        String key = getLocationKey(location);
-        return torches.get(key);
-    }
-
-    public void startDecayTask() {
-        int interval = plugin.getConfigManager().getCheckInterval();
-
-        decayTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            checkExpiredTorches();
-        }, interval, interval);
-    }
-
-    public void stopDecayTask() {
-        if (decayTask != null) {
-            decayTask.cancel();
-        }
-    }
-
-    private void checkExpiredTorches() {
-        boolean changed = torches.entrySet().removeIf(entry -> {
-            TorchData torchData = entry.getValue();
-
-            if (torchData.isExpired()) {
-                Location location = torchData.getLocation();
-
-                if (location.getBlock().getType() == Material.TORCH ||
-                        location.getBlock().getType() == Material.WALL_TORCH) {
-
-                    location.getBlock().setType(Material.AIR);
-
-                    dropItems(location);
-                }
-
-                return true;
-            }
-
-            return false;
-        });
-
-        if (changed) {
-            saveData();
-        }
-    }
-
-    private void dropItems(Location location) {
-        double stickChance = plugin.getConfigManager().getDropStickChance();
-        if (random.nextDouble() < stickChance) {
-            int stickAmount = plugin.getConfigManager().getDropStickAmount();
-            if (stickAmount > 0) {
-                location.getWorld().dropItemNaturally(location, new ItemStack(Material.STICK, stickAmount));
-            }
-        }
-
-        boolean droppedCoal = false;
-        double coalChance = plugin.getConfigManager().getDropCoalChance();
-        if (random.nextDouble() < coalChance) {
-            int coalAmount = plugin.getConfigManager().getDropCoalAmount();
-            if (coalAmount > 0) {
-                location.getWorld().dropItemNaturally(location, new ItemStack(Material.COAL, coalAmount));
-                droppedCoal = true;
-            }
-        }
-
-        if (!droppedCoal) {
-            double charcoalChance = plugin.getConfigManager().getDropCharcoalChance();
-            if (random.nextDouble() < charcoalChance) {
-                int charcoalAmount = plugin.getConfigManager().getDropCharcoalAmount();
-                if (charcoalAmount > 0) {
-                    ItemStack charcoal = new ItemStack(Material.CHARCOAL, charcoalAmount);
-                    charcoal.setDurability((short) 1);
-                    location.getWorld().dropItemNaturally(location, charcoal);
-                }
-            }
-        }
-    }
-
-    public void dropItemsManually(Location location) {
-        dropItems(location);
-    }
-
-    private String getLocationKey(Location location) {
-        return location.getWorld().getName() + "," +
-                location.getBlockX() + "," +
-                location.getBlockY() + "," +
-                location.getBlockZ();
+    public void stopScheduler() {
+        scheduler.cancel();
     }
 }

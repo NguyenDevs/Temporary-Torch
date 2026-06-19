@@ -1,43 +1,16 @@
-# TemporaryTorch Configuration
-# Created by NguyenDevs
-
-# Torch settings
-torch:
-  # Default duration in seconds before torch disappears
-  # This is used when player doesn't have override permission
-  default-duration: 3600  # 1 hour
-
-  # How often to check for expired torches (in ticks, 20 ticks = 1 second)
-  check-interval: 20
-
-  # Drop settings when torch expires or is broken without Silk Touch
-  drops:
-    stick:
-      # Chance to drop stick (0.0 - 1.0, where 1.0 = 100%)
-      chance: 1.0
-      amount: 1
-
-    coal:
-      # Chance to drop coal (0.0 - 1.0, where 1.0 = 100%)
-      chance: 0.0
-      amount: 1
-
-    charcoal:
-      # Chance to drop charcoal (0.0 - 1.0, where 1.0 = 100%)
-      chance: 0.1
-      amount: 1
-
-# List of worlds where the plugin is disabled
-disabled-worlds:
-  - world_nether_disabled_example
-  - world_the_end_disabled_example
-
-# Permission system:
-# - temporarytorch.bypass - Torches never expire for players with this permission
-# - temporarytorch.override.<number><unit> - Override default duration
-#   Examples:
-#   - temporarytorch.override.30m - Torch lasts 30 minutes
-#   - temporarytorch.override.1h - Torch lasts 1 hour
-#   - temporarytorch.override.2d - Torch lasts 2 days
-#   Units: s (seconds), m (minutes), h (hours), d (days)
-# - temporarytorch.admin - Required to use reload command
+torch-duration-seconds: 300
+max-torches-per-player: 10
+refuel:
+  coal-seconds: 60
+  charcoal-seconds: 30
+  allow-others-refuel: false
+  max-torch-lifetime-seconds: 3600
+messages:
+  torch-placed: "&aTorch will expire in {duration} seconds."
+  torch-expired: "&7Your torch at {x}, {y}, {z} has expired."
+  no-permission: "&cYou don't have permission."
+  max-reached: "&cYou have reached the maximum torch limit ({max})."
+  reload-success: "&aConfig reloaded."
+  torch-refueled: "&6Torch lifetime extended by {added}s. Remaining: {remaining}s."
+  torch-refuel-denied: "&cYou can only refuel your own torches."
+  torch-refuel-cap: "&cThis torch has reached its maximum lifetime."
